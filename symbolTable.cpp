@@ -6,38 +6,65 @@ using namespace std;
 
 void SymbolTable::push(Symbol *symbol) { // string identifierName, int lineNumber, tokenIDs tokenID, int scopeLevel
 cout << "pushing new symbol" << endl;
-  Symbol *newSymbol = new Symbol();
 
-  newSymbol->lineNumber = symbol->lineNumber;
-  newSymbol->identifierName = symbol->identifierName;
-  newSymbol->tokenID = symbol->tokenID;
-  newSymbol->scopeLevel = this->getScopeLevel();
 
-  this->localIdentifiers.push_back(newSymbol);
+  this->localIdentifiers.push_back(symbol);
 }
 
 void SymbolTable::pop() {
+  cout << "popping local variable" << endl;
   // remove "top-most" element from stack
   this->localIdentifiers.pop_back();
 }
 
 int SymbolTable::find(string identifierName) {
+  cout << "finding local variable..." << endl;
   int distanceFromTop = -1;
 
   // Iterate over all vars in the Symbol Table
-  for(vector<Symbol*>::iterator t = this->localIdentifiers.begin(); t!= this->localIdentifiers.end(); ++t) {
+
+  // for(vector<Symbol*>::reverse_iterator t = this->localIdentifiers.rbegin(); t != this->localIdentifiers.rend(); ++t) {
+  for(vector<Symbol*>::iterator t = this->localIdentifiers.begin(); t != this->localIdentifiers.end(); ++t) {
+    cout << "in reverse loop";
+    // find first occurrence of the argument on the stack (top to bottom)
     if(identifierName == (*t)->identifierName) {
-      cout << "found matching global variable for token with instance: " << (*t)->identifierName << endl;
+      cout << "found matching local variable for token with instance: " << (*t)->identifierName << endl;
+      // return the distance from the top of stack, where 0 is top of stack, -1 is not found
       distanceFromTop = (*t)->scopeLevel;
       return distanceFromTop;
     }
   }
 
-    // find first occurrence of the argument on the stack (top to bottom)
-
-    // return the distance from the top of stack, where 0 is top of stack, -1 is not found
-
+  // return -1 if not found in stack
   return distanceFromTop;
+}
+
+int SymbolTable::findGlobal(string identifierName) {
+  int distanceFromTop = -1;
+
+  // Iterate over all vars in the Symbol Table
+
+  // for(vector<Symbol*>::reverse_iterator t = this->globalIdentifiers.rbegin(); t!=this->globalIdentifiers.rend(); ++t) {
+  for(vector<Symbol*>::iterator t = this->globalIdentifiers.begin(); t!=this->globalIdentifiers.end(); ++t) {
+    // find first occurrence of the argument on the stack (top to bottom)
+    if(identifierName == (*t)->identifierName) {
+      cout << "found matching global variable for token with instance: " << (*t)->identifierName << endl;
+      // return the distance from the top of stack, where 0 is top of stack, -1 is not found
+      distanceFromTop = (*t)->scopeLevel;
+      return distanceFromTop;
+    }
+  }
+
+  // return -1 if not found in stack
+  return distanceFromTop;
+}
+
+void SymbolTable::printIdentifiers() {
+  cout << "Globals: \n" << endl;
+  this->printGlobal();
+  cout << "\nLocals (should be empty): \n" << endl;
+  this->printLocal();
+  cout << "finsihed" << endl;
 }
 
 // int SymbolTable::verifyGlobal(Token *token) {
@@ -56,9 +83,15 @@ int SymbolTable::find(string identifierName) {
 //   return found;
 // }
 
-void SymbolTable::printStack(vector<Symbol*> symbolList) {
-  for(size_t i = 0; i<symbolList.size(); ++i) {
-    cout << "Identifier: " << symbolList[i]->identifierName << endl;
+void SymbolTable::printGlobal() {
+  for(vector<Symbol*>::iterator t = this->globalIdentifiers.begin(); t != this->globalIdentifiers.end(); ++t) {
+    cout << "Identifier: " << (*t)->identifierName << " - scope level: " << (*t)->scopeLevel << endl;
+  }
+}
+
+void SymbolTable::printLocal() {
+  for(vector<Symbol*>::iterator t = this->localIdentifiers.begin(); t != this->localIdentifiers.end(); ++t) {
+    cout << "Identifier: " << (*t)->identifierName << " - scope level: " << (*t)->scopeLevel << endl;
   }
 }
 
@@ -86,6 +119,14 @@ Symbol* SymbolTable::createSymbol(Token *token) {
   newSymbol->scopeLevel = this->getScopeLevel();
 
   return newSymbol;
+}
+
+void SymbolTable::printVarCounts() {
+  size_t i = 0;
+  for(vector<int>::iterator t = this->varCounts.begin(); t != this->varCounts.end(); ++t) {
+    cout << "var count #" << i << ": " << *(t) << endl;
+    ++i;
+  }
 }
 
 // void SymbolTable::insert(string identifierName) {

@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
     root_node = parser.parser(in);
     // 3. Call printTree() from printTree.cpp
     PrintTree printTree;
-    // printTree.printTree(root_node);
+    printTree.printTree(root_node);
 
     printTree.semanticAnalyze(root_node);
 

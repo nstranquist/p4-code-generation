@@ -15,16 +15,23 @@ class SymbolTable {
     vector<int> varCounts;
     int blockCount;
     bool isBeforeMain;
+    bool newBlock;
     int varCount;
+    int iter;
     void push(Symbol *symbol); // string identifierName, int lineNumber, tokenIDs tokenID, int scopeLevel
     void pop();
     int find(string identifierName); // , int lineNumber, tokenIDs tokenID
-    // void insert(string identifierName); 
+    int findGlobal(string identifierName); // , int lineNumber, tokenIDs tokenID
     int verifyGlobal(Token *token);
-    void printStack(vector<Symbol*> symbolList);
+    // void printStack(vector<Symbol*> symbolList);
+    void printLocal();
+    void printGlobal();
     int getScopeLevel();
+    int getLastVarCount();
 
     Symbol* createSymbol(Token *token);
+    void printVarCounts();
+    void printIdentifiers();
 
   private:
     // vector<int*> varCounts; (?) (when popping "end", pop here as well. when pushing (begin), push here as well. Index should be level
