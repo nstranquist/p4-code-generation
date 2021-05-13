@@ -1,0 +1,15 @@
+requirements.txt
+notes.txt
+.vscode
+test
+
+# output files
+parser
+staticSemantics
+main.o
+scanner.o
+parser.o
+printTree.o
+tree.o
+staticSemantics.o
+symbolTable.o
