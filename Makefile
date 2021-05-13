@@ -2,8 +2,8 @@
 
 #  -std=C++11 as option to g++ commands
 
-staticSemantics: main.o parser.o scanner.o printTree.o tree.o symbolTable.o
-	g++ main.o parser.o scanner.o printTree.o tree.o symbolTable.o -o staticSemantics
+compfs: main.o parser.o scanner.o printTree.o tree.o symbolTable.o
+	g++ main.o parser.o scanner.o printTree.o tree.o symbolTable.o -o compfs
 
 main.o: main.cpp printTree.h parser.h token.h tree.h node.h symbol.h symbolTable.h
 	g++ -c -Wall -std=c++11 main.cpp

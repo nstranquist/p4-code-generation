@@ -13,3 +13,4 @@ printTree.o
 tree.o
 staticSemantics.o
 symbolTable.o
+compfs
