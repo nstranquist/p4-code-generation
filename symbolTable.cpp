@@ -5,31 +5,24 @@
 using namespace std;
 
 void SymbolTable::push(Symbol *symbol) { // string identifierName, int lineNumber, tokenIDs tokenID, int scopeLevel
-cout << "\npushing new local symbol: " << symbol->identifierName << "\n" << endl;
-
-
   this->localIdentifiers.push_back(symbol);
 }
 
 void SymbolTable::pop() {
-  cout << "popping local variable" << endl;
   // remove "top-most" element from stack
   if(this->localIdentifiers.empty()) return;
   this->localIdentifiers.pop_back();
 }
 
 int SymbolTable::find(string identifierName) {
-  cout << "finding local variable..." << endl;
   int distanceFromTop = -1;
 
   // Iterate over all vars in the Symbol Table
 
   // for(vector<Symbol*>::reverse_iterator t = this->localIdentifiers.rbegin(); t != this->localIdentifiers.rend(); ++t) {
   for(vector<Symbol*>::iterator t = this->localIdentifiers.begin(); t != this->localIdentifiers.end(); ++t) {
-    cout << "in reverse loop";
     // find first occurrence of the argument on the stack (top to bottom)
     if(identifierName == (*t)->identifierName) {
-      cout << "found matching local variable for token with instance: " << (*t)->identifierName << endl;
       // return the distance from the top of stack, where 0 is top of stack, -1 is not found
       distanceFromTop = (*t)->scopeLevel;
       return distanceFromTop;
@@ -49,7 +42,6 @@ int SymbolTable::findGlobal(string identifierName) {
   for(vector<Symbol*>::iterator t = this->globalIdentifiers.begin(); t!=this->globalIdentifiers.end(); ++t) {
     // find first occurrence of the argument on the stack (top to bottom)
     if(identifierName == (*t)->identifierName) {
-      cout << "found matching global variable for token with instance: " << (*t)->identifierName << endl;
       // return the distance from the top of stack, where 0 is top of stack, -1 is not found
       distanceFromTop = (*t)->scopeLevel;
       return distanceFromTop;
@@ -67,22 +59,6 @@ void SymbolTable::printIdentifiers() {
   this->printLocal();
 }
 
-// int SymbolTable::verifyGlobal(Token *token) {
-//   int found = 0;
-//   // find tokenInstance in globals. iterate
-//   size_t i = 0;
-//   for(vector<Symbol*>::iterator t = this->globalIdentifiers.begin(); t != this->globalIdentifiers.end(); ++t) {
-//     if(token->tokenInstance == (*t)->identifierName) {
-//       cout << "found matching global variable for token with instance: " << (*t)->identifierName << endl;
-//       found = 1;
-//       return found;
-//     }
-//     ++i;
-//   }
-
-//   return found;
-// }
-
 void SymbolTable::printGlobal() {
   for(vector<Symbol*>::iterator t = this->globalIdentifiers.begin(); t != this->globalIdentifiers.end(); ++t) {
     cout << "Identifier: " << (*t)->identifierName << " - scope level: " << (*t)->scopeLevel << endl;
@@ -94,21 +70,6 @@ void SymbolTable::printLocal() {
     cout << "Identifier: " << (*t)->identifierName << " - scope level: " << (*t)->scopeLevel << endl;
   }
 }
-
-// int SymbolTable::getScopeLevel() {
-//   cout << "scope level (blockCount): " << this->blockCount << endl;
-//   return this->blockCount;
-//   // Get scope level of most recent, return
-//   // if(this->localIdentifiers.size() == 0) {
-//   //   return 0; // is at top, global level
-//   // }
-  
-//   // Symbol *lastSymbol = this->localIdentifiers.back();
-
-//   // cout << "last symbol of local identifiers: " << lastSymbol->identifierName << " with scope level: " << lastSymbol->scopeLevel << endl;
-
-//   // return lastSymbol->scopeLevel;
-// }
 
 void SymbolTable::removeAtBlockLevel(int blockLevel) {
   int matchingBlocks = 0;
@@ -145,9 +106,6 @@ void SymbolTable::printVarCounts() {
 }
 
 void SymbolTable::pushGlobal(Symbol *symbol) { // string identifierName, int lineNumber, tokenIDs tokenID, int scopeLevel
-cout << "\npushing new global symbol: " << symbol->identifierName << "\n" << endl;
-
-
   this->globalIdentifiers.push_back(symbol);
 }
 
