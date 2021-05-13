@@ -180,7 +180,6 @@ void PrintTree::scanPreorder(Node *root, int level) {
 
   if(root->label == "block") {
     cout << "assuming end of block (level: " << this->symbolTable.blockCount << ")\n" << endl;
-    this->symbolTable.blockCount--;
     // pop varCount number of times
 
     cout << "PRINTING VAR COUNTS (before pop): \n" << endl;
@@ -190,17 +189,23 @@ void PrintTree::scanPreorder(Node *root, int level) {
     cout << "\n";
 
     // Get the last element
-    int lastVarCount = this->symbolTable.varCounts.back();
+    // int lastVarCount = this->symbolTable.varCounts.back();
        
-    for(int numVars = lastVarCount; numVars > 0; numVars--) {
-      this->symbolTable.pop();
-    }
+    // for(int numVars = lastVarCount; numVars > 0; numVars--) {
+    //   this->symbolTable.pop();
+    // }
+
+    // Pop All elements at the block level
+    this->symbolTable.removeAtBlockLevel(this->symbolTable.blockCount);
+
     this->symbolTable.varCounts.pop_back();
     cout << "\nPRINTING VAR COUNTS (after pop): \n" << endl;
     this->symbolTable.printVarCounts();
     cout << "\n\nLocal Variables (after pop):\n" << endl;
     this->symbolTable.printLocal();
     cout << "\n";
+
+    this->symbolTable.blockCount--;
   }
 }
 

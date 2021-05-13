@@ -110,6 +110,21 @@ void SymbolTable::printLocal() {
 //   // return lastSymbol->scopeLevel;
 // }
 
+void SymbolTable::removeAtBlockLevel(int blockLevel) {
+  int matchingBlocks = 0;
+
+  // Iterate over local symbols, remove if matches block level
+  for(vector<Symbol*>::iterator t = this->localIdentifiers.begin(); t != this->localIdentifiers.end(); ++t) {
+    if((*t)->scopeLevel == blockLevel) {
+      matchingBlocks++;
+    }
+  }
+
+  for(int i = matchingBlocks; i>0; i--) {
+    this->pop();
+  }
+}
+
 Symbol* SymbolTable::createSymbol(Token *token) {
   Symbol *newSymbol = new Symbol();
 
