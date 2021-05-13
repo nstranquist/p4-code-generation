@@ -9,6 +9,7 @@ loop [ y => z ]
   data m := 3 ;
      begin
      proc x ; 
+     assign m := y ;
      end
   end ;
 outter x ;

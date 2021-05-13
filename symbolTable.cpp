@@ -5,7 +5,7 @@
 using namespace std;
 
 void SymbolTable::push(Symbol *symbol) { // string identifierName, int lineNumber, tokenIDs tokenID, int scopeLevel
-cout << "pushing new symbol" << endl;
+cout << "\npushing new local symbol: " << symbol->identifierName << "\n" << endl;
 
 
   this->localIdentifiers.push_back(symbol);
@@ -14,6 +14,7 @@ cout << "pushing new symbol" << endl;
 void SymbolTable::pop() {
   cout << "popping local variable" << endl;
   // remove "top-most" element from stack
+  if(this->localIdentifiers.empty()) return;
   this->localIdentifiers.pop_back();
 }
 
@@ -64,7 +65,6 @@ void SymbolTable::printIdentifiers() {
   this->printGlobal();
   cout << "\nLocals (should be empty): \n" << endl;
   this->printLocal();
-  cout << "finsihed" << endl;
 }
 
 // int SymbolTable::verifyGlobal(Token *token) {
@@ -95,20 +95,20 @@ void SymbolTable::printLocal() {
   }
 }
 
-int SymbolTable::getScopeLevel() {
-  cout << "scope level (blockCount): " << this->blockCount << endl;
-  return this->blockCount;
-  // Get scope level of most recent, return
-  // if(this->localIdentifiers.size() == 0) {
-  //   return 0; // is at top, global level
-  // }
+// int SymbolTable::getScopeLevel() {
+//   cout << "scope level (blockCount): " << this->blockCount << endl;
+//   return this->blockCount;
+//   // Get scope level of most recent, return
+//   // if(this->localIdentifiers.size() == 0) {
+//   //   return 0; // is at top, global level
+//   // }
   
-  // Symbol *lastSymbol = this->localIdentifiers.back();
+//   // Symbol *lastSymbol = this->localIdentifiers.back();
 
-  // cout << "last symbol of local identifiers: " << lastSymbol->identifierName << " with scope level: " << lastSymbol->scopeLevel << endl;
+//   // cout << "last symbol of local identifiers: " << lastSymbol->identifierName << " with scope level: " << lastSymbol->scopeLevel << endl;
 
-  // return lastSymbol->scopeLevel;
-}
+//   // return lastSymbol->scopeLevel;
+// }
 
 Symbol* SymbolTable::createSymbol(Token *token) {
   Symbol *newSymbol = new Symbol();
@@ -116,7 +116,7 @@ Symbol* SymbolTable::createSymbol(Token *token) {
   newSymbol->identifierName = token->tokenInstance;
   newSymbol->lineNumber = token->lineNumber;
   newSymbol->tokenID = token->tokenID;
-  newSymbol->scopeLevel = this->getScopeLevel();
+  newSymbol->scopeLevel = this->blockCount;
 
   return newSymbol;
 }
@@ -128,6 +128,14 @@ void SymbolTable::printVarCounts() {
     ++i;
   }
 }
+
+void SymbolTable::pushGlobal(Symbol *symbol) { // string identifierName, int lineNumber, tokenIDs tokenID, int scopeLevel
+cout << "\npushing new global symbol: " << symbol->identifierName << "\n" << endl;
+
+
+  this->globalIdentifiers.push_back(symbol);
+}
+
 
 // void SymbolTable::insert(string identifierName) {
 //   // Can Add Scope later, maybe to state

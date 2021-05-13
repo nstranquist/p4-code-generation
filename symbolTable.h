@@ -19,6 +19,7 @@ class SymbolTable {
     int varCount;
     int iter;
     void push(Symbol *symbol); // string identifierName, int lineNumber, tokenIDs tokenID, int scopeLevel
+    void pushGlobal(Symbol *symbol); // string identifierName, int lineNumber, tokenIDs tokenID, int scopeLevel
     void pop();
     int find(string identifierName); // , int lineNumber, tokenIDs tokenID
     int findGlobal(string identifierName); // , int lineNumber, tokenIDs tokenID
@@ -26,7 +27,7 @@ class SymbolTable {
     // void printStack(vector<Symbol*> symbolList);
     void printLocal();
     void printGlobal();
-    int getScopeLevel();
+    // int getScopeLevel();
     int getLastVarCount();
 
     Symbol* createSymbol(Token *token);

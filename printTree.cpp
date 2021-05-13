@@ -42,17 +42,23 @@ void PrintTree::scanPreorder(Node *root, int level) {
       // call pop() varCount times
       // reset varCount
   if(root->label == "block") {
-    cout << "is a block element, assuming start of block" << endl;
-    this->symbolTable.newBlock = true;
+    this->symbolTable.blockCount++;
+    cout << "is a block element, assuming start of block (level: " << this->symbolTable.blockCount << ")" << endl;
+    cout << "previous level's varCount: " << this->symbolTable.varCount << "\n" << endl;
+    // this->symbolTable.newBlock = true;
+    // if(this->symbolTable.blockCount > 1) {
+    //   this->symbolTable.varCounts.push_back(this->symbolTable.varCount);
+    // }
+    // this->symbolTable.varCount = 0;
     // update var counts
     // this->symbolTable.varCounts.push_back(0);
-    this->symbolTable.blockCount++;
   }
 
   if(root->tokens.size() > 0) {
     cout << ": ";
     // Print All Token Values, left to right
     size_t i = 0;
+
     for(vector<Token*>::iterator t = root->tokens.begin(); t != root->tokens.end(); ++t) {
       cout << (*t)->tokenInstance << " ";
 
@@ -62,20 +68,33 @@ void PrintTree::scanPreorder(Node *root, int level) {
           if(i > 0 && root->tokens[i-1]->tokenInstance == "data") {
             // And if next token is ':='
             if(i < root->tokens.size()-1 && root->tokens[i+1]->tokenInstance == ":=") {
-              cout << "is a valid 'identifier' declaration" << endl;
+              if(this->symbolTable.blockCount == 0) {
+                // Check global
+                int foundGlobal = this->symbolTable.findGlobal((*t)->tokenInstance);
+                cout << "found global: " << foundGlobal << endl;
+                if(foundGlobal >= 0) { //  && foundGlobal < this->symbolTable.varCounts.at(foundGlobal)
+                  string errorMessage = "Error: The global variable '" + (*t)->tokenInstance + "' is already defined at scope level 0 on line #";
+                  errorMessage += to_string((*t)->lineNumber);
+                  throw invalid_argument(errorMessage);
+                }
+              }
               if(this->symbolTable.varCount > 0) {
                 int found = this->symbolTable.find((*t)->tokenInstance);
-                cout << "found value: " << found << endl;
+                cout << "found local: " << found << endl;
                 if(found >= 0 && found < this->symbolTable.varCounts.at(found)) {
-                  cout << "Error: This variable is already defined in this scope" << endl;
+                  string errorMessage = "Error: The variable '" + (*t)->tokenInstance + "' is already defined at scope level ";
+                  errorMessage += to_string(this->symbolTable.blockCount);
+                  errorMessage += " on line #";
+                  errorMessage += to_string((*t)->lineNumber);
+                  throw invalid_argument(errorMessage);
                 }
               }
               Symbol *symbol = this->symbolTable.createSymbol(*t);
               if(this->symbolTable.blockCount == 0) {
-                this->symbolTable.globalIdentifiers.push_back(symbol);
+                this->symbolTable.pushGlobal(symbol);
               }
               else {
-                this->symbolTable.localIdentifiers.push_back(symbol);
+                this->symbolTable.push(symbol);
               }
               this->symbolTable.varCount++;
             }
@@ -92,22 +111,20 @@ void PrintTree::scanPreorder(Node *root, int level) {
       }
       else {
         if((*t)->tokenID == IDENT_tk) {
-          cout << "is identifier token. is being used" << endl;
           int found = this->symbolTable.find((*t)->tokenInstance);
-              cout << "found local" << endl;
+              cout << "found local: " << found << endl;
           
           if(found == -1) {
             // Check in Globals
             int foundGlobal = this->symbolTable.findGlobal((*t)->tokenInstance);
-              cout << "found global" << endl;
+              cout << "found global: " << foundGlobal << endl;
 
             if(foundGlobal == -1) {
-              cout << "printing" << endl;
               this->symbolTable.printIdentifiers();
               // still not found, throw error
               string errorMessage = "Error: Unrecognized identifier '" + (*t)->tokenInstance;
               errorMessage += "' used before declaration (with 'data') on line #";
-              errorMessage += (*t)->lineNumber;
+              errorMessage += to_string((*t)->lineNumber);
               throw invalid_argument(errorMessage);
             }
           }
@@ -136,14 +153,21 @@ void PrintTree::scanPreorder(Node *root, int level) {
           // reset varCount = 0; (or pop from vector if using that option)
     }
     // END of for loop
-    if(root->label == "vars" && this->symbolTable.newBlock) {
-      cout << "\n!! pushing varCount to varCounts: " << this->symbolTable.varCount << endl;
-      this->symbolTable.varCounts.push_back(this->symbolTable.varCount);
-      this->symbolTable.varCount = 0; // reset the var count
-      this->symbolTable.newBlock = false;
-    }
+    // if(root->label == "vars" && this->symbolTable.newBlock && this->symbolTable.blockCount > 0) {
+    //   cout << "\n!! pushing varCount to varCounts: " << this->symbolTable.varCount << endl;
+    //   // this->symbolTable.varCounts.push_back(this->symbolTable.varCount);
+    //   // this->symbolTable.varCount = 0; // reset the var count
+    //   // this->symbolTable.newBlock = false;
+    //   // this->symbolTable.printVarCounts();
+    // }
   }
-  // END of tokens size check
+  if(root->label == "block") {
+    // if(this->symbolTable.blockLevel > 1) { ... } // if wanting to exclude globals from varCounts
+    cout << "\npushing varCount: " << this->symbolTable.varCount << "\n" << endl;
+    this->symbolTable.varCounts.push_back(this->symbolTable.varCount);
+    this->symbolTable.varCount = 0;
+  }
+
   cout << "\n";
 
   // Iterate over vectors, from left to right, calling printPreorder() on the vector
@@ -155,12 +179,15 @@ void PrintTree::scanPreorder(Node *root, int level) {
   }
 
   if(root->label == "block") {
-    cout << "assuming end of block" << endl;
+    cout << "assuming end of block (level: " << this->symbolTable.blockCount << ")\n" << endl;
     this->symbolTable.blockCount--;
     // pop varCount number of times
 
     cout << "PRINTING VAR COUNTS (before pop): \n" << endl;
     this->symbolTable.printVarCounts();
+    cout << "\n\nLocal Variables (before pop):\n" << endl;
+    this->symbolTable.printLocal();
+    cout << "\n";
 
     // Get the last element
     int lastVarCount = this->symbolTable.varCounts.back();
@@ -169,26 +196,18 @@ void PrintTree::scanPreorder(Node *root, int level) {
       this->symbolTable.pop();
     }
     this->symbolTable.varCounts.pop_back();
-    cout << "PRINTING VAR COUNTS (after pop): \n" << endl;
+    cout << "\nPRINTING VAR COUNTS (after pop): \n" << endl;
     this->symbolTable.printVarCounts();
-
-    cout << "\nmade out of block" << endl;
+    cout << "\n\nLocal Variables (after pop):\n" << endl;
+    this->symbolTable.printLocal();
+    cout << "\n";
   }
 }
- // int numVars;
-    // int varCountsSize = this->symbolTable.varCounts.size();
-    // if(varCountsSize > 0) {
-    //   cout << "size > 0: " << varCountsSize << endl;
-    //   numVars = this->symbolTable.varCounts[varCountsSize - 1];
-    // }
-    // else {
-    //   numVars = 0;
-    // }
+
 void PrintTree::printTree(Node *root)
 {
   cout << "2. Printing Tree...\n\n";
 
-  // Print with Preorder traversal, with indentations, for testing purposes
   int startingLevel = 0;
   this->printPreorder(root, startingLevel);
 }
