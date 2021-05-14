@@ -7,6 +7,8 @@
 
 class PrintTree {
   public:
+    ofstream out;
+
     void semanticAnalyze(Node *node, string outputFilename);
     void scanPreorder(Node *node, int level);
     void printTree(Node *root);

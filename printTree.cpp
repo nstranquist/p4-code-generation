@@ -17,16 +17,14 @@ void PrintTree::semanticAnalyze(Node *root, string outputFilename) {
   // this->codeGenerator.initialize(outputFilename);
   // cout << "done init" << endl;
 
-  ofstream out;
-
-  out.open(outputFilename);
-  if(!out.is_open() || !out) {
+  this->out.open(outputFilename);
+  if(!this->out.is_open() || !this->out) {
     cout << "Warning! Out is not open" << endl;
+    throw invalid_argument("Error: Could not open file provided (named '" + outputFilename + "'");
   }
   else {
-    out << "TEST" << endl;
-    out.close();
-    // return if needed
+    this->out << "TEST" << endl;
+    this->out.close();
   }
 
   SymbolTable symbolTable;
