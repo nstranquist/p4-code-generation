@@ -2,5 +2,5 @@ $$ p2g0, remember to try variants of this with each different statement $$
 data x := 5 ;
 main
 begin
-getter x ;
+assign x := x - 5 ;
 end

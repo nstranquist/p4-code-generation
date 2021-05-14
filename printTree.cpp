@@ -285,6 +285,25 @@ void PrintTree::scanPreorder(Node *root, int level) {
       }
       // Either getting "-" or Not.
     }
+    else if(root->label == "N") {
+      if(!root->tokens.empty()) {
+        // Then will go right to left
+        this->scanPreorder(root->nodes[1], level + 1);
+        tempVar = this->generateTempVar();
+        this->out << "STORE " << tempVar << endl;
+        this->scanPreorder(root->nodes[0], level + 1);
+        if(root->tokens[0]->tokenInstance == "/") {
+          this->out << "DIV " << tempVar << endl;
+        }
+        else if(root->tokens[0]->tokenInstance == "*") {
+          this->out << "MULT " << tempVar << endl;
+        }
+      }
+      else {
+        // will just do normally
+        this->scanPreorder(root->nodes[0], level + 1);
+      }
+    }
     else if(root->label == "R") {
       if(!root->tokens.empty() && (root->tokens[0]->tokenID == IDENT_tk || root->tokens[0]->tokenID == NUM_tk)) {
         // find the variable if IDENT, then error or LOAD
