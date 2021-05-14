@@ -119,9 +119,8 @@ void PrintTree::scanPreorder(Node *root, int level) {
                 Symbol *symbol = this->symbolTable.createSymbol(*t);
                 this->symbolTable.push(symbol);
                 cout << "pushing temp symbol: " << symbol->identifierName << endl;
-                string tempVar = this->generateTempVar();
-                this->out << "LOAD " << tempVar << endl;
-                this->out << "ADD " << root->tokens[i+2]->tokenInstance << endl;
+                this->out << "PUSH" << endl;
+                this->out << "LOAD " << root->tokens[i+2]->tokenInstance << endl;
                 this->out << "STACKW 0" << endl;
               }
               
@@ -166,7 +165,19 @@ void PrintTree::scanPreorder(Node *root, int level) {
       // Evaluate RHS first, which would be the only node
       this->scanPreorder(root->nodes[0], level + 1);
       // Then STORE
-      this->out << "STORE " << root->tokens[1]->tokenInstance << endl;
+      int found = this->symbolTable.find(root->tokens[1]->tokenInstance);
+      if(found == -1) {
+        int foundGlobal = this->symbolTable.findGlobal(root->tokens[1]->tokenInstance);
+        if(foundGlobal == -1) {
+          string errorMessage = "Error: Variable not found";
+          throw invalid_argument(errorMessage);
+        }
+        this->out << "STORE " << root->tokens[1]->tokenInstance << endl;
+      }
+      else {
+        // Add to Local Storage
+        this->out << "STACKR " << found << endl;
+      }
     }
     else if(root->label == "expr") {
       this->scanPreorder(root->nodes[0], level + 1);
@@ -228,9 +239,16 @@ void PrintTree::scanPreorder(Node *root, int level) {
               errorMessage += to_string(root->tokens[0]->lineNumber);
               throw invalid_argument(errorMessage);
             }
+            this->out << "LOAD " << root->tokens[0]->tokenInstance << endl;
+          }
+          else {
+            // Get the local variable
+            this->out << "STACKR " << found << endl;
+            // Should be loaded now
+            // tempVar = this->generateTempVar();
+            // this->out << "STORE " << tempVar << endl;
           }
         }
-        this->out << "LOAD " << root->tokens[0]->tokenInstance << endl;
       }
     }
     else if(root->label == "if") {
@@ -366,7 +384,10 @@ void PrintTree::scanPreorder(Node *root, int level) {
 
   if(root->label == "block") {
     // Pop All elements at the block level
-    this->symbolTable.removeAtBlockLevel(this->symbolTable.blockCount);
+    int numRemovals = this->symbolTable.removeAtBlockLevel(this->symbolTable.blockCount);
+    for(int i = numRemovals; i > 0; i--) {
+      this->out << "POP" << endl;
+    }
 
     this->symbolTable.blockCount--;
   }

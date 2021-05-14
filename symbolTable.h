@@ -33,7 +33,7 @@ class SymbolTable {
     Symbol* createSymbol(Token *token);
     void printVarCounts();
     void printIdentifiers();
-    void removeAtBlockLevel(int blockLevel);
+    int removeAtBlockLevel(int blockLevel);
 
   private:
     // vector<int*> varCounts; (?) (when popping "end", pop here as well. when pushing (begin), push here as well. Index should be level

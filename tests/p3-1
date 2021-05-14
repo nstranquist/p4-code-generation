@@ -5,4 +5,5 @@ begin
 data y := 67 ;
 outter y ;
 assign x := y ;
+outter x ;
 end

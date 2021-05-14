@@ -75,7 +75,7 @@ void SymbolTable::printLocal() {
   }
 }
 
-void SymbolTable::removeAtBlockLevel(int blockLevel) {
+int SymbolTable::removeAtBlockLevel(int blockLevel) {
   int matchingBlocks = 0;
 
   // Iterate over local symbols, remove if matches block level
@@ -88,6 +88,8 @@ void SymbolTable::removeAtBlockLevel(int blockLevel) {
   for(int i = matchingBlocks; i>0; i--) {
     this->pop();
   }
+
+  return matchingBlocks;
 }
 
 Symbol* SymbolTable::createSymbol(Token *token) {
