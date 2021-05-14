@@ -19,6 +19,7 @@ class PrintTree {
     void printPreorder(Node *node, int level);
     void printGlobalsToStorage();
     void printTempVarsToStorage();
+    void printTempLabelsToStorage();
     string generateTempVar();
     string generateTempLabel();
     string getMostRecentTempVar();

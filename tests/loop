@@ -2,7 +2,7 @@ data x := 5 ;
 data y := 3 ;
 main
 begin
-loop [ x [ == ] y ]
+loop [ x == y ]
   begin
   outter y ;
   end ;

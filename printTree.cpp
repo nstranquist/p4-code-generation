@@ -40,6 +40,7 @@ void PrintTree::semanticAnalyze(Node *root, string outputFilename) {
   
   this->printGlobalsToStorage();
   this->printTempVarsToStorage();
+  this->printTempLabelsToStorage();
 
   this->out.close();
 }
@@ -223,6 +224,7 @@ void PrintTree::scanPreorder(Node *root, int level) {
 
                 Symbol *symbol = this->symbolTable.createSymbol(*t);
                 this->symbolTable.push(symbol);
+                cout << "pushing temp symbol: " << symbol->identifierName << endl;
                 string tempVar = this->generateTempVar();
                 this->out << "LOAD " << tempVar << endl;
                 this->out << "ADD " << root->tokens[i+2]->tokenInstance << endl;
@@ -254,6 +256,9 @@ void PrintTree::scanPreorder(Node *root, int level) {
 
         ++i;
 
+      }
+      if(!root->nodes.empty()) {
+        this->scanPreorder(root->nodes[0], level + 1);
       }
     }
     else if(root->label == "out") {
@@ -390,7 +395,7 @@ void PrintTree::scanPreorder(Node *root, int level) {
         // Do everything inside loop
         this->scanPreorder(root->nodes[3], level + 1);
       }
-      else if(root->nodes[1]->tokens[0]->tokenInstance == "[") {
+      else if(root->nodes[1]->tokens[0]->tokenInstance == "[==]") {
         this->out << "SUB " << tempVar << endl;
         // opposite signs
         this->out << "BRZERO " << tempLabel << endl;
@@ -571,22 +576,22 @@ void PrintTree::scanPreorder(Node *root, int level) {
 }
 
 string PrintTree::generateTempVar() {
-  string tempName = "V" + to_string(this->tempVarsCount);
+  string tempName = "T" + to_string(this->tempVarsCount);
   this->tempVarsCount++;
   return tempName;
 }
 string PrintTree::getMostRecentTempVar() {
-  string tempName = "V" + to_string(this->tempVarsCount-1);
+  string tempName = "T" + to_string(this->tempVarsCount-1);
   return tempName;
 }
 
 string PrintTree::generateTempLabel() {
-  string tempName = "T" + to_string(this->tempLabelsCount);
+  string tempName = "L" + to_string(this->tempLabelsCount);
   this->tempLabelsCount++;
   return tempName;
 }
 string PrintTree::getMostRecentTempLabel() {
-  string tempName = "T" + to_string(this->tempLabelsCount-1);
+  string tempName = "L" + to_string(this->tempLabelsCount-1);
   return tempName;
 }
 
@@ -600,7 +605,12 @@ void PrintTree::printGlobalsToStorage() {
 
 void PrintTree::printTempVarsToStorage() {
   for(int i=0; i<this->tempVarsCount; i++) {
-    this->out << "V" << to_string(i) << " 0" << endl;
+    this->out << "T" << to_string(i) << " 0" << endl;
+  }
+}
+void PrintTree::printTempLabelsToStorage() {
+  for(int i=0; i<this->tempLabelsCount; i++) {
+    this->out << "L" << to_string(i) << " 0" << endl;
   }
 }
 
