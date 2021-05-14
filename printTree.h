@@ -8,11 +8,13 @@
 class PrintTree {
   public:
     ofstream out;
+    int tempVars;
 
     void semanticAnalyze(Node *node, string outputFilename);
     void scanPreorder(Node *node, int level);
     void printTree(Node *root);
     void printPreorder(Node *node, int level);
+    void printGlobalsToStorage();
 
   private:
     SymbolTable symbolTable;

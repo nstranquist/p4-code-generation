@@ -11,6 +11,7 @@
 using namespace std;
 
 void PrintTree::semanticAnalyze(Node *root, string outputFilename) {
+  this->tempVars = 0;
   // CodeGenerator codeGenerator;
   // this->codeGenerator = codeGenerator;
   // cout << "initializing" << endl;
@@ -38,6 +39,9 @@ void PrintTree::semanticAnalyze(Node *root, string outputFilename) {
   cout << "\nScan Complete. Tokens at the end: \n" << endl;
   this->symbolTable.printIdentifiers();
 
+  // Print all global variables to storage
+  this->printGlobalsToStorage();
+
   this->out << "STOP" << endl;
   this->out.close();
 }
@@ -49,65 +53,80 @@ void PrintTree::scanPreorder(Node *root, int level) {
   }
 
   // Need to switch(root->label) so that based on the label, we can do specific things
-  if(root->label == "program") {
-    cout << "<program>" << endl;
-  }
-  else if(root->label == "block") {
-    cout << "<block>" << endl;
-  }
-  else if(root->label == "vars") {
-    cout << "<vars>" << endl;
-  }
-  else if(root->label == "expr") {
-    cout << "<expr>" << endl;
-  }
-  else if(root->label == "N") {
-    cout << "<N>" << endl;
-  }
-  else if(root->label == "A") {
-    cout << "<A>" << endl;
-  }
-  else if(root->label == "M") {
-    cout << "<M>" << endl;
-  }
-  else if(root->label == "R") {
-    cout << "<R>" << endl;
-  }
-  else if(root->label == "stats") {
-    cout << "<stats>" << endl;
-  }
-  else if(root->label == "mStat") {
-    cout << "<mStat>" << endl;
-  }
-  else if(root->label == "stat") {
-    cout << "<stat>" << endl;
-  }
-  else if(root->label == "in") {
-    cout << "<in>" << endl;
-  }
-  else if(root->label == "out") {
-    cout << "<out>" << endl;
-  }
-  else if(root->label == "if") {
-    cout << "<if>" << endl;
-  }
-  else if(root->label == "loop") {
-    cout << "<loop>" << endl;
-  }
-  else if(root->label == "assign") {
-    cout << "<assign>" << endl;
-  }
-  else if(root->label == "RO") {
-    cout << "<RO>" << endl;
-  }
-  else if(root->label == "label") {
-    cout << "<label>" << endl;
-  }
-  else if(root->label == "goto") {
-    cout << "<goto>" << endl;
-  }
-  else {
-    cout << "ERROR?: no matching label found" << endl;
+  if(!root->tokens.empty()) {
+    if(root->label == "program") {
+      this->out << "<program>" << endl;
+    }
+    else if(root->label == "block") {
+      this->out << "<block>" << endl;
+    }
+    else if(root->label == "vars") {
+      this->out << "<vars>" << endl;
+    }
+    else if(root->label == "expr") {
+      this->out << "<expr>" << endl;
+    }
+    else if(root->label == "N") {
+      this->out << "<N>" << endl;
+    }
+    else if(root->label == "A") {
+      this->out << "<A>" << endl;
+    }
+    else if(root->label == "M") {
+      this->out << "<M>" << endl;
+    }
+    else if(root->label == "R") {
+      this->out << "<R>" << endl;
+    }
+    else if(root->label == "stats") {
+      this->out << "<stats>" << endl;
+    }
+    else if(root->label == "mStat") {
+      this->out << "<mStat>" << endl;
+    }
+    else if(root->label == "stat") {
+      this->out << "<stat>" << endl;
+    }
+    else if(root->label == "in") {
+      // getter reads in an integer from input and stores it in the identifier
+      this->out << "<in>" << endl;
+    }
+    else if(root->label == "out") {
+      // outter outputs the given calculated value
+      this->out << "<out>" << endl;
+    }
+    else if(root->label == "if") {
+      // if statement is like in C
+      this->out << "<if>" << endl;
+    }
+    else if(root->label == "loop") {
+      // Loop statement is like the while loop in C
+      this->out << "<loop>" << endl;
+    }
+    else if(root->label == "assign") {
+      // Assignment evaluates the expression on the right and assigns to the ID on the left
+      this->out << "<assign>" << endl;
+    }
+    else if(root->label == "RO") {
+      /*
+      =< is less equal
+      => is greater equal
+      [ == ]  is NOT equal
+      == is equal
+      % returns true if the signs of the arguments are opposite
+      */
+      this->out << "<RO>" << endl;
+    }
+    else if(root->label == "label") {
+      // void statement places a label that can be jumped to directly in a branch using proc
+      this->out << "<label>" << endl;
+    }
+    else if(root->label == "goto") {
+      this->out << "<goto>" << endl;
+    }
+    else {
+      cout << "ERROR?: no matching label found" << endl;
+    }
   }
 
   if(root->label == "block") {
@@ -228,6 +247,12 @@ void PrintTree::scanPreorder(Node *root, int level) {
     this->symbolTable.removeAtBlockLevel(this->symbolTable.blockCount);
 
     this->symbolTable.blockCount--;
+  }
+}
+
+void PrintTree::printGlobalsToStorage() {
+  for(vector<Symbol*>::iterator t = this->symbolTable.globalIdentifiers.begin(); t != this->symbolTable.globalIdentifiers.end(); ++t) {
+    this->out << (*t)->identifierName << " 0" << endl;
   }
 }
 
