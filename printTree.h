@@ -1,6 +1,7 @@
 #ifndef PRINTTREE_H
 #define PRINTTREE_H
 
+#include <vector>
 #include "node.h"
 #include "symbolTable.h"
 // #include "codeGenerator.h"
@@ -8,8 +9,9 @@
 class PrintTree {
   public:
     ofstream out;
-    int tempVars;
-    int tempLabels;
+    int tempVarsCount;
+    int tempLabelsCount;
+    vector<string> globalValues;
 
     void semanticAnalyze(Node *node, string outputFilename);
     void scanPreorder(Node *node, int level);
@@ -19,6 +21,8 @@ class PrintTree {
     void printTempVarsToStorage();
     string generateTempVar();
     string generateTempLabel();
+    string getMostRecentTempVar();
+    string getMostRecentTempLabel();
 
   private:
     SymbolTable symbolTable;

@@ -11,8 +11,8 @@
 using namespace std;
 
 void PrintTree::semanticAnalyze(Node *root, string outputFilename) {
-  this->tempVars = 0;
-  this->tempLabels = 0;
+  this->tempVarsCount = 0;
+  this->tempLabelsCount = 0;
 
   this->out.open(outputFilename);
   if(!this->out.is_open() || !this->out) {
@@ -50,6 +50,9 @@ void PrintTree::scanPreorder(Node *root, int level) {
     return;
   }
 
+  string tempVar = "";
+  string tempLable = "";
+
   if(!root->tokens.empty()) {
     if(root->label == "program") {
       this->out << "<program>" << endl;
@@ -73,7 +76,7 @@ void PrintTree::scanPreorder(Node *root, int level) {
       this->out << "<M>" << endl;
     }
     else if(root->label == "R") {
-      this->out << "<R>" << endl;
+      // this->out << "<R>" << endl;
     }
     else if(root->label == "stats") {
       this->out << "<stats>" << endl;
@@ -204,9 +207,8 @@ void PrintTree::scanPreorder(Node *root, int level) {
                 Symbol *symbol = this->symbolTable.createSymbol(*t);
                 this->symbolTable.pushGlobal(symbol);
                 this->out << "PUSH" << endl;
-                this->out << "READ " << root->tokens[i]->tokenInstance << endl;
-                this->out << "LOAD " << root->tokens[i]->tokenInstance << endl;
-                this->out << "STORE " << root->tokens[i]->tokenInstance << endl;
+                // this->out << "LOAD " << root->tokens[i]->tokenInstance << endl;
+                // this->out << "STORE " << root->tokens[i]->tokenInstance << endl;
               }
               else {
                 int found = this->symbolTable.find((*t)->tokenInstance);
@@ -220,10 +222,10 @@ void PrintTree::scanPreorder(Node *root, int level) {
 
                 Symbol *symbol = this->symbolTable.createSymbol(*t);
                 this->symbolTable.push(symbol);
-                // string tempVar = this->generateTempVar();
-                this->out << "READ " << symbol->identifierName << endl;
-                this->out << "LOAD " << symbol->identifierName << endl;
-                this->out << "STACKW " << 0 << endl;
+                string tempVar = this->generateTempVar();
+                this->out << "LOAD " << tempVar << endl;
+                this->out << "ADD " << root->tokens[i+2]->tokenInstance << endl;
+                this->out << "STACKW 0" << endl;
               }
               
               this->symbolTable.varCount++;
@@ -235,6 +237,16 @@ void PrintTree::scanPreorder(Node *root, int level) {
           }
           else {
             string errorMessage = "Error: 'data' must be used to declare a new variable on line #" + (*t)->lineNumber;
+            throw invalid_argument(errorMessage);
+          }
+        }
+        else if((*t)->tokenID == NUM_tk) {
+          if(root->tokens[i-1]->tokenInstance == ":=") {
+            // Add the number info to the global vars
+            this->globalValues.push_back(root->tokens[i]->tokenInstance);
+          }
+          else {
+            string errorMessage = "Error: Number must be preceded by ':=' on line #" + (*t)->lineNumber;
             throw invalid_argument(errorMessage);
           }
         }
@@ -255,6 +267,24 @@ void PrintTree::scanPreorder(Node *root, int level) {
 
       // 3. READ and PRINT var
     }
+    else if(root->label == "assign") {
+      // Evaluate RHS first, which would be the only node
+      this->scanPreorder(root->nodes[0], level + 1);
+      // Then STORE
+      this->out << "STORE " << root->tokens[1]->tokenInstance << endl;
+    }
+    else if(root->label == "expr") {
+      this->scanPreorder(root->nodes[0], level + 1);
+      if(!root->tokens.empty() && root->tokens[0]->tokenInstance == "-") {
+        tempVar = this->generateTempVar();
+        this->out << "STORE " << tempVar << endl;
+        this->scanPreorder(root->nodes[1], level + 1);
+        this->out << "SUB " << tempVar << endl;; // Note: can fill the rest in later
+        this->out << "MULT -1" << endl;
+        // Is this where we need the generated variables?
+      }
+      // Either getting "-" or Not.
+    }
     else if(root->label == "R") {
       if(!root->tokens.empty() && (root->tokens[0]->tokenID == IDENT_tk || root->tokens[0]->tokenID == NUM_tk)) {
         // find the variable if IDENT, then error or LOAD
@@ -272,20 +302,9 @@ void PrintTree::scanPreorder(Node *root, int level) {
           }
         }
         this->out << "LOAD " << root->tokens[0]->tokenInstance << endl;
-      }
-    }
-    else if(root->label == "assign") {
-      // Evaluate RHS first, which would be the only node
-      this->scanPreorder(root->nodes[0], level + 1);
-      // Then STORE
-      this->out << "STORE " << root->tokens[1]->tokenInstance << endl;
-    }
-    else if(root->label == "expr") {
-      this->scanPreorder(root->nodes[0], level + 1);
-      // Either getting "-" or Not.
-      if(!root->tokens.empty() && root->tokens[0]->tokenInstance == "-") {
-        this->out << "SUB "; // Note: can fill the rest in later
-
+          // this->out << "LOAD " << tempVar << endl;
+          // this->out << "ADD " << root->tokens[0]->tokenInstance << endl;
+          // this->out << "LOAD " << root->tokens[0]->tokenInstance << endl;
       }
     }
     else {
@@ -458,25 +477,35 @@ void PrintTree::scanPreorder(Node *root, int level) {
 }
 
 string PrintTree::generateTempVar() {
-  string tempName = "V" + to_string(this->tempVars);
-  this->tempVars++;
+  string tempName = "V" + to_string(this->tempVarsCount);
+  this->tempVarsCount++;
+  return tempName;
+}
+string PrintTree::getMostRecentTempVar() {
+  string tempName = "V" + to_string(this->tempVarsCount-1);
   return tempName;
 }
 
 string PrintTree::generateTempLabel() {
-  string tempName = "T" + to_string(this->tempLabels);
-  this->tempLabels++;
+  string tempName = "T" + to_string(this->tempLabelsCount);
+  this->tempLabelsCount++;
+  return tempName;
+}
+string PrintTree::getMostRecentTempLabel() {
+  string tempName = "T" + to_string(this->tempLabelsCount-1);
   return tempName;
 }
 
 void PrintTree::printGlobalsToStorage() {
+  int i = 0;
   for(vector<Symbol*>::iterator t = this->symbolTable.globalIdentifiers.begin(); t != this->symbolTable.globalIdentifiers.end(); ++t) {
-    this->out << (*t)->identifierName << " 0" << endl;
+    this->out << (*t)->identifierName << " " << this->globalValues[i] << endl;
+    i++;
   }
 }
 
 void PrintTree::printTempVarsToStorage() {
-  for(int i=0; i<this->tempVars; i++) {
+  for(int i=0; i<this->tempVarsCount; i++) {
     this->out << "V" << to_string(i) << " 0" << endl;
   }
 }
