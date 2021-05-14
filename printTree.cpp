@@ -51,7 +51,7 @@ void PrintTree::scanPreorder(Node *root, int level) {
   }
 
   string tempVar = "";
-  string tempLable = "";
+  string tempLabel = "";
 
   if(!root->tokens.empty()) {
     if(root->label == "program") {
@@ -205,6 +205,7 @@ void PrintTree::scanPreorder(Node *root, int level) {
                   throw invalid_argument(errorMessage);
                 }
                 Symbol *symbol = this->symbolTable.createSymbol(*t);
+                cout << "Pushing global symbol: " << symbol->identifierName << endl;
                 this->symbolTable.pushGlobal(symbol);
                 this->out << "PUSH" << endl;
                 // this->out << "LOAD " << root->tokens[i]->tokenInstance << endl;
@@ -347,6 +348,58 @@ void PrintTree::scanPreorder(Node *root, int level) {
           // this->out << "ADD " << root->tokens[0]->tokenInstance << endl;
           // this->out << "LOAD " << root->tokens[0]->tokenInstance << endl;
       }
+    }
+    else if(root->label == "loop") {
+      tempLabel = this->generateTempLabel();
+      string loopLabel = this->generateTempLabel();
+      this->out << loopLabel << ": ";
+      // 1. expr right
+      this->scanPreorder(root->nodes[2], level + 1);
+      tempVar = this->generateTempVar();
+      this->out << "STORE " << tempVar << endl;
+      // 2. expr left
+      this->scanPreorder(root->nodes[0], level + 1);
+      // 3. RO
+      
+      if(root->nodes[1]->tokens[0]->tokenInstance == "=>") {
+        this->out << "SUB " << tempVar << endl;
+        // greater than equal
+        this->out << "BRZNEG " << tempLabel << endl;
+        // Do everything inside loop
+        this->scanPreorder(root->nodes[3], level + 1);
+      }
+      else if(root->nodes[1]->tokens[0]->tokenInstance == "=<") {
+        this->out << "SUB " << tempVar << endl;
+        // less than equal
+        this->out << "BRZPOS " << tempLabel << endl;
+        // Do everything inside loop
+        this->scanPreorder(root->nodes[3], level + 1);
+      }
+      else if(root->nodes[1]->tokens[0]->tokenInstance == "==") {
+        this->out << "SUB " << tempVar << endl;
+        // less than equal
+        this->out << "BRNEG " << tempLabel << endl;
+        this->out << "BRPOS " << tempLabel << endl;
+        // Do everything inside loop
+        this->scanPreorder(root->nodes[3], level + 1);
+      }
+      else if(root->nodes[1]->tokens[0]->tokenInstance == "%") {
+        this->out << "MULT " << tempVar << endl;
+        // opposite signs
+        this->out << "BRPOS " << tempLabel << endl;
+        // Do everything inside loop
+        this->scanPreorder(root->nodes[3], level + 1);
+      }
+      else if(root->nodes[1]->tokens[0]->tokenInstance == "[") {
+        this->out << "SUB " << tempVar << endl;
+        // opposite signs
+        this->out << "BRZERO " << tempLabel << endl;
+        // Do everything inside loop
+        this->scanPreorder(root->nodes[3], level + 1);
+      }
+      this->out << "BR " << loopLabel << endl;
+      this->out << tempLabel << ": NOOP" << endl;
+      // 4. label stuff...
     }
     else {
       size_t i = 0;

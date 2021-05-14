@@ -553,10 +553,21 @@ Node* Parser::RO()
     this->token = this->getTokenFromScanner();
     return subRoot;
   }
-  else if (this->token->tokenInstance == "[" || this->token->tokenInstance == "==" || this->token->tokenInstance == "]")
+  else if (this->token->tokenInstance == "[")
   {
-    subRoot->tokens.push_back(this->token);
+    cout << "is " << this->token->tokenInstance << endl;
     this->token = this->getTokenFromScanner();
+    if (this->token->tokenInstance == "==") {
+      cout << "is " << this->token->tokenInstance << endl;
+      this->token = this->getTokenFromScanner();
+      if(this->token->tokenInstance == "]") {
+        cout << "is " << this->token->tokenInstance << endl;
+        this->token->tokenInstance = "[==]";
+        subRoot->tokens.push_back(this->token);
+        this->token = this->getTokenFromScanner();
+      }
+    }
+
     return subRoot;
   }
   else if (this->token->tokenInstance == "%")
