@@ -1,4 +1,4 @@
-scope=LOCAL
+Storage=LOCAL
 
 # P4 - Code Generation
 
