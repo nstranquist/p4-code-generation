@@ -1,5 +1,8 @@
 $$ p2g1, remember to try variants of this with each different statement $$
+data x := 5 ;
 main
 begin
+data y := 7 ;
 getter x ;
+outter y ;
 end
