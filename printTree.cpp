@@ -60,7 +60,7 @@ void PrintTree::scanPreorder(Node *root, int level) {
   }
 
   if(root->tokens.size() > 0) {
-    cout << ": ";
+    // cout << ": ";
   }
     // Print All Token Values, left to right
     size_t i = 0;
@@ -87,7 +87,7 @@ void PrintTree::scanPreorder(Node *root, int level) {
 
     else if(root->label == "vars") {
       for(vector<Token*>::iterator t = root->tokens.begin(); t != root->tokens.end(); ++t) {
-        cout << (*t)->tokenInstance << " ";
+        // cout << (*t)->tokenInstance << " ";
         if((*t)->tokenID == IDENT_tk) {
           // If previous token is 'data'
           if(i > 0 && root->tokens[i-1]->tokenInstance == "data") {
@@ -102,7 +102,6 @@ void PrintTree::scanPreorder(Node *root, int level) {
                   throw invalid_argument(errorMessage);
                 }
                 Symbol *symbol = this->symbolTable.createSymbol(*t);
-                cout << "Pushing global symbol: " << symbol->identifierName << endl;
                 this->symbolTable.pushGlobal(symbol);
                 this->out << "PUSH" << endl;
               }
@@ -118,7 +117,6 @@ void PrintTree::scanPreorder(Node *root, int level) {
 
                 Symbol *symbol = this->symbolTable.createSymbol(*t);
                 this->symbolTable.push(symbol);
-                cout << "pushing temp symbol: " << symbol->identifierName << endl;
                 this->out << "PUSH" << endl;
                 this->out << "LOAD " << root->tokens[i+2]->tokenInstance << endl;
                 this->out << "STACKW 0" << endl;
@@ -252,7 +250,6 @@ void PrintTree::scanPreorder(Node *root, int level) {
       }
     }
     else if(root->label == "if") {
-      cout << "we are in 'if'" << endl;
       tempLabel = this->generateTempLabel();
       // 1. expr right
       this->scanPreorder(root->nodes[2], level + 1);
