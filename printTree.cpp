@@ -1,13 +1,34 @@
 #include <iostream>
+#include <fstream>
+#include <iomanip>
 #include <stdio.h>
 #include "node.h"
 #include "tree.h"
 #include "printTree.h"
 #include "symbolTable.h"
+// #include "codeGenerator.h"
 
 using namespace std;
 
-void PrintTree::semanticAnalyze(Node *root) {
+void PrintTree::semanticAnalyze(Node *root, string outputFilename) {
+  // CodeGenerator codeGenerator;
+  // this->codeGenerator = codeGenerator;
+  // cout << "initializing" << endl;
+  // this->codeGenerator.initialize(outputFilename);
+  // cout << "done init" << endl;
+
+  ofstream out;
+
+  out.open(outputFilename);
+  if(!out.is_open() || !out) {
+    cout << "Warning! Out is not open" << endl;
+  }
+  else {
+    out << "TEST" << endl;
+    out.close();
+    // return if needed
+  }
+
   SymbolTable symbolTable;
   this->symbolTable = symbolTable;
   this->symbolTable.varCount = 0;
@@ -22,6 +43,9 @@ void PrintTree::semanticAnalyze(Node *root) {
 
   cout << "\nScan Complete. Tokens at the end: \n" << endl;
   this->symbolTable.printIdentifiers();
+
+  cout << "Writing 'STOP' to file" << endl;
+  cout << "'STOP'" << endl;
 }
 
 void PrintTree::scanPreorder(Node *root, int level) {

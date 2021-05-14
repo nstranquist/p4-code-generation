@@ -2,7 +2,7 @@
 
 #  -std=C++11 as option to g++ commands
 
-compfs: main.o parser.o scanner.o printTree.o tree.o symbolTable.o
+compfs: main.o parser.o scanner.o printTree.o tree.o symbolTable.o # codeGenerator.o
 	g++ main.o parser.o scanner.o printTree.o tree.o symbolTable.o -o compfs
 
 main.o: main.cpp printTree.h parser.h token.h tree.h node.h symbol.h symbolTable.h
@@ -14,7 +14,7 @@ parser.o: parser.cpp parser.h token.h table.h tree.h node.h symbol.h symbolTable
 scanner.o: scanner.cpp scanner.h token.h table.h
 	g++ -c -Wall -std=c++11 scanner.cpp
 
-printTree.o: printTree.cpp printTree.h node.h tree.h symbolTable.h symbol.h
+printTree.o: printTree.cpp printTree.h node.h tree.h symbolTable.h symbol.h # codeGenerator.h
 	g++ -c -Wall -std=c++11 printTree.cpp
 
 tree.o: tree.cpp tree.h
@@ -22,3 +22,6 @@ tree.o: tree.cpp tree.h
 
 symbolTable.o: symbolTable.cpp symbolTable.h symbol.h
 	g++ -c -Wall -std=c++11 symbolTable.cpp
+
+# codeGenerator.o: codeGenerator.cpp codeGenerator.h
+# 	g++ -c -Wall -std=c++11 codeGenerator.cpp

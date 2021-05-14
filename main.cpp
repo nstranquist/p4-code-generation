@@ -18,11 +18,13 @@ int main(int argc, char *argv[])
   // 1. Implement All Checks on inputs and stuff before calling parser
   istream *in;
   ifstream out;
+  string outputFilename;
 
   if (argc == 1)
   {
     in = &cin;
     cout << "\n0. Please enter the input for the program. Finish by entering a new line." << endl;
+    outputFilename = "kb.asm";
   }
   // Argument given, open the file and use it
   else if (argc == 2)
@@ -31,6 +33,8 @@ int main(int argc, char *argv[])
     out.open(fileName.c_str());
     in = &out;
 
+    outputFilename = fileName + ".asm";
+
     cout << "\n0. Reading your file...\n\n";
     if (!out.is_open())
     {
@@ -38,9 +42,11 @@ int main(int argc, char *argv[])
       if (fileName.find(".fs") == std::string::npos)
       {
         // try one more time to open the file
-        fileName = fileName = ".fs";
+        fileName = fileName + ".fs";
         out.open(fileName.c_str());
         in = &out;
+
+        outputFilename = fileName + ".asm";
 
         if (!out.is_open())
         {
@@ -84,7 +90,7 @@ int main(int argc, char *argv[])
     PrintTree printTree;
     printTree.printTree(root_node);
 
-    printTree.semanticAnalyze(root_node);
+    printTree.semanticAnalyze(root_node, outputFilename);
 
     return 0;
   }

@@ -14,3 +14,4 @@ tree.o
 staticSemantics.o
 symbolTable.o
 compfs
+codeGenerator.o
