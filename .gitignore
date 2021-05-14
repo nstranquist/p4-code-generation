@@ -15,3 +15,5 @@ staticSemantics.o
 symbolTable.o
 compfs
 codeGenerator.o
+
+tests/*.asm
