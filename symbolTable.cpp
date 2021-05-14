@@ -18,15 +18,17 @@ int SymbolTable::find(string identifierName) {
   int distanceFromTop = -1;
 
   // Iterate over all vars in the Symbol Table
+  int index = 0;
 
   // for(vector<Symbol*>::reverse_iterator t = this->localIdentifiers.rbegin(); t != this->localIdentifiers.rend(); ++t) {
-  for(vector<Symbol*>::iterator t = this->localIdentifiers.begin(); t != this->localIdentifiers.end(); ++t) {
+  for(vector<Symbol*>::reverse_iterator t = this->localIdentifiers.rbegin(); t != this->localIdentifiers.rend(); ++t) {
     // find first occurrence of the argument on the stack (top to bottom)
     if(identifierName == (*t)->identifierName) {
       // return the distance from the top of stack, where 0 is top of stack, -1 is not found
-      distanceFromTop = (*t)->scopeLevel;
-      return distanceFromTop;
+      // distanceFromTop = (*t)->scopeLevel;
+      return index;
     }
+    index++;
   }
 
   // return -1 if not found in stack
@@ -37,15 +39,17 @@ int SymbolTable::findGlobal(string identifierName) {
   int distanceFromTop = -1;
 
   // Iterate over all vars in the Symbol Table
+  int index = 0;
 
   // for(vector<Symbol*>::reverse_iterator t = this->globalIdentifiers.rbegin(); t!=this->globalIdentifiers.rend(); ++t) {
-  for(vector<Symbol*>::iterator t = this->globalIdentifiers.begin(); t!=this->globalIdentifiers.end(); ++t) {
+  for(vector<Symbol*>::reverse_iterator t = this->globalIdentifiers.rbegin(); t!=this->globalIdentifiers.rend(); ++t) {
     // find first occurrence of the argument on the stack (top to bottom)
     if(identifierName == (*t)->identifierName) {
       // return the distance from the top of stack, where 0 is top of stack, -1 is not found
-      distanceFromTop = (*t)->scopeLevel;
-      return distanceFromTop;
+      // distanceFromTop = (*t)->scopeLevel;
+      return index;
     }
+    index++;
   }
 
   // return -1 if not found in stack
