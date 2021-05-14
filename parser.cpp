@@ -165,10 +165,12 @@ Node* Parser::expr()
 
   if (this->token->tokenInstance == "-") // && this->token->tokenID == OpDelim_tk
   {
+    cout << "next token is -" << endl;
     subRoot->tokens.push_back(this->token);
     this->token = this->getTokenFromScanner();
     Node *exprToken;
     exprToken = expr();
+    subRoot->nodes.push_back(exprToken);
     return subRoot;
   }
   else {
@@ -272,6 +274,7 @@ Node* Parser::R()
     return subRoot;
   }
   else if(this->token->tokenID == NUM_tk) {
+    cout << "is num" << endl;
     subRoot->tokens.push_back(this->token);
     this->token = this->getTokenFromScanner();
     return subRoot;

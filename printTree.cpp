@@ -274,6 +274,20 @@ void PrintTree::scanPreorder(Node *root, int level) {
         this->out << "LOAD " << root->tokens[0]->tokenInstance << endl;
       }
     }
+    else if(root->label == "assign") {
+      // Evaluate RHS first, which would be the only node
+      this->scanPreorder(root->nodes[0], level + 1);
+      // Then STORE
+      this->out << "STORE " << root->tokens[1]->tokenInstance << endl;
+    }
+    else if(root->label == "expr") {
+      this->scanPreorder(root->nodes[0], level + 1);
+      // Either getting "-" or Not.
+      if(!root->tokens.empty() && root->tokens[0]->tokenInstance == "-") {
+        this->out << "SUB "; // Note: can fill the rest in later
+
+      }
+    }
     else {
       size_t i = 0;
       for(vector<Node*>::iterator t = root->nodes.begin(); t != root->nodes.end(); ++t) {
