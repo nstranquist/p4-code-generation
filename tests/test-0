@@ -2,7 +2,9 @@ $$ p2g0, remember to try variants of this with each different statement $$
 data x := 5 ;
 main
 begin
-void x ;
+if [ x =< 3 ] then 
+  begin
+  outter x ;
+  end ;
 assign x := 3 + 5 ;
-proc x ;
 end

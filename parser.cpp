@@ -345,6 +345,7 @@ Node* Parser::stat()
       node = out();
     }
     else if(this->token->tokenInstance == "if") {
+      cout << "found if" << endl;
       node = _if();
     }
     else if(this->token->tokenInstance == "loop") {
@@ -418,6 +419,7 @@ Node* Parser::out()
 }
 Node* Parser::_if()
 {
+  cout << "in if" << endl;
   Node *subRoot;
   subRoot = this->tree->createNode("if");
   // if [ <expr> <RO> <expr> ] then <stat>
@@ -427,15 +429,18 @@ Node* Parser::_if()
     subRoot->tokens.push_back(this->token);
     this->token = this->getTokenFromScanner();
     if(this->token->tokenInstance == "[") {
+      cout << "recognized [ token" << endl;
       subRoot->tokens.push_back(this->token);
+      this->token = this->getTokenFromScanner();
       Node *exprNode, *roNode;
       exprNode = expr();
       subRoot->nodes.push_back(exprNode);
       roNode = RO();
+      cout << "pushing ro node. current token: " << this->token->tokenInstance << endl;
       subRoot->nodes.push_back(roNode);
       exprNode = expr();
       exprNode->nodes.push_back(exprNode);
-      this->token = this->getTokenFromScanner();
+      // this->token = this->getTokenFromScanner();
       if(this->token->tokenInstance == "]") {
         subRoot->tokens.push_back(this->token);
         this->token = this->getTokenFromScanner();
@@ -445,6 +450,7 @@ Node* Parser::_if()
           Node *statNode;
           statNode = stat();
           subRoot->nodes.push_back(statNode);
+          cout << "returning subroot" << endl;
           return subRoot;
         }
         else
