@@ -342,7 +342,9 @@ void PrintTree::scanPreorder(Node *root, int level) {
     }
     else if(root->label == "goto") { // proc Identifier
       if(!root->tokens.empty() && root->tokens[1]->tokenID == IDENT_tk) {
-        this->out << "BR " << this->lab1 << endl;
+        if(this->lab1 != "") {
+          this->out << "BR " << this->lab1 << endl;
+        }
       }
     }
     else {
