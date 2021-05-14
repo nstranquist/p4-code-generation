@@ -4,9 +4,7 @@ Storage=LOCAL
 
 This is the code generation part of the project
 
-As discussed during office hours, I'll be including output of the program in the `output/` folder, since my local dev environment compiles but does not compile with `make` on Delmar without throwing errors.
-
-Tests are included in the `tests/` folder, and their names correspond with the output names. `p4-[test-name]-output` is the format I used to name the output screenshots. I used the test programs from P2 and P3, and some of the P2 programs threw errors as expected.
+As discussed during office hours, I'll be showing you the code compilation live, since my local dev environment compiles but does not compile with `make` on Delmar without throwing errors. For P2 and P3, I attached output screenshots instead
 
 ### Steps to Run (skip if on Delmar)
 
