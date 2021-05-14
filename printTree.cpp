@@ -22,10 +22,6 @@ void PrintTree::semanticAnalyze(Node *root, string outputFilename) {
     cout << "Warning! Out is not open" << endl;
     throw invalid_argument("Error: Could not open file provided (named '" + outputFilename + "'");
   }
-  else {
-    this->out << "TEST" << endl;
-    this->out.close();
-  }
 
   SymbolTable symbolTable;
   this->symbolTable = symbolTable;
@@ -42,14 +38,76 @@ void PrintTree::semanticAnalyze(Node *root, string outputFilename) {
   cout << "\nScan Complete. Tokens at the end: \n" << endl;
   this->symbolTable.printIdentifiers();
 
-  cout << "Writing 'STOP' to file" << endl;
-  cout << "'STOP'" << endl;
+  this->out << "STOP" << endl;
+  this->out.close();
 }
 
 void PrintTree::scanPreorder(Node *root, int level) {
   if (root==NULL) {
     cout << "root is null. returning" << endl;
     return;
+  }
+
+  // Need to switch(root->label) so that based on the label, we can do specific things
+  if(root->label == "program") {
+    cout << "<program>" << endl;
+  }
+  else if(root->label == "block") {
+    cout << "<block>" << endl;
+  }
+  else if(root->label == "vars") {
+    cout << "<vars>" << endl;
+  }
+  else if(root->label == "expr") {
+    cout << "<expr>" << endl;
+  }
+  else if(root->label == "N") {
+    cout << "<N>" << endl;
+  }
+  else if(root->label == "A") {
+    cout << "<A>" << endl;
+  }
+  else if(root->label == "M") {
+    cout << "<M>" << endl;
+  }
+  else if(root->label == "R") {
+    cout << "<R>" << endl;
+  }
+  else if(root->label == "stats") {
+    cout << "<stats>" << endl;
+  }
+  else if(root->label == "mStat") {
+    cout << "<mStat>" << endl;
+  }
+  else if(root->label == "stat") {
+    cout << "<stat>" << endl;
+  }
+  else if(root->label == "in") {
+    cout << "<in>" << endl;
+  }
+  else if(root->label == "out") {
+    cout << "<out>" << endl;
+  }
+  else if(root->label == "if") {
+    cout << "<if>" << endl;
+  }
+  else if(root->label == "loop") {
+    cout << "<loop>" << endl;
+  }
+  else if(root->label == "assign") {
+    cout << "<assign>" << endl;
+  }
+  else if(root->label == "RO") {
+    cout << "<RO>" << endl;
+  }
+  else if(root->label == "label") {
+    cout << "<label>" << endl;
+  }
+  else if(root->label == "goto") {
+    cout << "<goto>" << endl;
+  }
+  else {
+    cout << "ERROR?: no matching label found" << endl;
   }
 
   if(root->label == "block") {
