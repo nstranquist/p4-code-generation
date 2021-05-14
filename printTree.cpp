@@ -54,110 +54,6 @@ void PrintTree::scanPreorder(Node *root, int level) {
   string tempVar = "";
   string tempLabel = "";
 
-  if(!root->tokens.empty()) {
-    if(root->label == "program") {
-      this->out << "<program>" << endl;
-    }
-    else if(root->label == "block") {
-      this->out << "<block>" << endl;
-    }
-    else if(root->label == "vars") {
-      this->out << "<vars>" << endl;
-    }
-    else if(root->label == "expr") {
-      this->out << "<expr>" << endl;
-    }
-    else if(root->label == "N") {
-      this->out << "<N>" << endl;
-    }
-    else if(root->label == "A") {
-      this->out << "<A>" << endl;
-    }
-    else if(root->label == "M") {
-      this->out << "<M>" << endl;
-    }
-    else if(root->label == "R") {
-      // this->out << "<R>" << endl;
-    }
-    else if(root->label == "stats") {
-      this->out << "<stats>" << endl;
-    }
-    else if(root->label == "mStat") {
-      this->out << "<mStat>" << endl;
-    }
-    else if(root->label == "stat") {
-      this->out << "<stat>" << endl;
-    }
-    else if(root->label == "in") {
-      // getter reads in an integer from input and stores it in the identifier
-      this->out << "<in>" << endl;
-    }
-    else if(root->label == "out") {
-      // outter outputs the given calculated value
-      this->out << "<out>" << endl;
-    }
-    else if(root->label == "if") {
-      // if statement is like in C
-      // this->out << "<if>" << endl;
-      // 1. Evaluate arg2 (should be 3rd token)
-      // this->scanPreorder(root->nodes[2], level + 1);
-      // 2. STORE results2 (will be done at the token level)
-      // 3. Evaluate arg1 (should be 1st token)
-      // this->scanPreorder(root->nodes[0], level + 1);
-
-      // 4. Based on the value of <RO> (nodes[1]), write out accordingly
-      
-    }
-    else if(root->label == "loop") {
-      // Loop statement is like the while loop in C
-      this->out << "<loop>" << endl;
-    }
-    else if(root->label == "assign") {
-      // Assignment evaluates the expression on the right and assigns to the ID on the left
-      this->out << "<assign>" << endl;
-    }
-    else if(root->label == "RO") {
-      /*
-      =< is less equal
-      => is greater equal
-      [ == ]  is NOT equal
-      == is equal
-      % returns true if the signs of the arguments are opposite
-      */
-      this->out << "<RO>" << endl;
-      // if(root->nodes[1]->tokens[0]->tokenInstance == "=>") {
-      //   // greater than equal
-      //   this->out << "" << endl;
-      // }
-      // else if(root->nodes[1]->tokens[0]->tokenInstance == "=<") {
-      //   // less than equal
-      //   this->out << "" << endl;
-      // }
-      // else if(root->nodes[1]->tokens[0]->tokenInstance == "==") {
-      //   // is equal
-      //   this->out << "" << endl;
-      // }
-      // else if(root->nodes[1]->tokens[0]->tokenInstance == "[==]") {
-      //   // not equal
-      //   this->out << "" << endl;
-      // }
-      // else if(root->nodes[1]->tokens[0]->tokenInstance == "%") {
-      //   // returns true if signs of arguments are opposite
-      //   this->out << "" << endl;
-      // }
-    }
-    else if(root->label == "label") {
-      // void statement places a label that can be jumped to directly in a branch using proc
-      this->out << "<label>" << endl;
-    }
-    else if(root->label == "goto") {
-      this->out << "<goto>" << endl;
-    }
-    else {
-      cout << "ERROR?: no matching label found" << endl;
-    }
-  }
-
   // Need to switch(root->label) so that based on the label, we can do specific things
   if(root->label == "block") {
     this->symbolTable.blockCount++;
@@ -209,8 +105,6 @@ void PrintTree::scanPreorder(Node *root, int level) {
                 cout << "Pushing global symbol: " << symbol->identifierName << endl;
                 this->symbolTable.pushGlobal(symbol);
                 this->out << "PUSH" << endl;
-                // this->out << "LOAD " << root->tokens[i]->tokenInstance << endl;
-                // this->out << "STORE " << root->tokens[i]->tokenInstance << endl;
               }
               else {
                 int found = this->symbolTable.find((*t)->tokenInstance);
@@ -267,11 +161,6 @@ void PrintTree::scanPreorder(Node *root, int level) {
       string tempVar = this->generateTempVar();
       this->out << "STORE " << tempVar << endl; // load from ACC after the correct value is loaded in
       this->out << "WRITE " << tempVar << endl;
-      // 1. find var in global
-
-      // 2. find var in local
-
-      // 3. READ and PRINT var
     }
     else if(root->label == "assign") {
       // Evaluate RHS first, which would be the only node
@@ -287,9 +176,7 @@ void PrintTree::scanPreorder(Node *root, int level) {
         this->scanPreorder(root->nodes[1], level + 1);
         this->out << "SUB " << tempVar << endl;; // Note: can fill the rest in later
         this->out << "MULT -1" << endl;
-        // Is this where we need the generated variables?
       }
-      // Either getting "-" or Not.
     }
     else if(root->label == "N") {
       if(!root->tokens.empty()) {
@@ -325,11 +212,6 @@ void PrintTree::scanPreorder(Node *root, int level) {
       }
     }
     else if(root->label == "M") {
-      // if(!root->tokens.empty()) {
-      //   // Then assume * token, run MULT on M
-      //   this->scanPreorder(root->nodes[0], level + 1);
-      //   this->out << "MULT " << 
-      // }
       this->scanPreorder(root->nodes[0], level + 1);
     }
     else if(root->label == "R") {
@@ -349,9 +231,6 @@ void PrintTree::scanPreorder(Node *root, int level) {
           }
         }
         this->out << "LOAD " << root->tokens[0]->tokenInstance << endl;
-          // this->out << "LOAD " << tempVar << endl;
-          // this->out << "ADD " << root->tokens[0]->tokenInstance << endl;
-          // this->out << "LOAD " << root->tokens[0]->tokenInstance << endl;
       }
     }
     else if(root->label == "if") {
@@ -473,159 +352,15 @@ void PrintTree::scanPreorder(Node *root, int level) {
         ++i;
       }
     }
-      // else if((*t)->tokenID == IDENT_tk && root->label != "in") {
-      //   int found = this->symbolTable.find((*t)->tokenInstance);
-        
-      //   if(found == -1) {
-      //     // Check in Globals
-      //     int foundGlobal = this->symbolTable.findGlobal((*t)->tokenInstance);
 
-      //     if(foundGlobal == -1) {
-      //       // still not found, throw error
-      //       string errorMessage = "Error: Unrecognized identifier '" + (*t)->tokenInstance;
-      //       errorMessage += "' used before declaration (with 'data') on line #";
-      //       errorMessage += to_string((*t)->lineNumber);
-      //       throw invalid_argument(errorMessage);
-      //     }
-      //     else {
-      //       // Use Global
-      //       this->out << "READ " << this->symbolTable.globalIdentifiers[foundGlobal] << endl;
-      //       // this->out << "LOAD " << this->symbolTable.globalIdentifiers[foundGlobal] << endl;
-      //       // this->out << ""
-      //     }
-      //   }
-      //   else {
-      //     this->out << "STACKR " << found << endl;
-      //     // string tempVar = this->generateTempVar();
-      //     this->out << "STORE " << this->symbolTable.localIdentifiers[found]->identifierName << endl;
-      //     if(root->label == "out") {
-      //       this->out << "WRITE " << this->symbolTable.localIdentifiers[found]->identifierName << endl;
-      //     }
-      //   }
-      // }
-      // else if((*t)->tokenID == NUM_tk) {
-      //   this->out << "LOAD " << (*t)->tokenInstance << endl;
-      //   if(root->label == "out") {
-      //     this->out << "WRITE " << (*t)->tokenInstance << endl;
-      //   }
-      // }
   if(root->label == "block") {
     this->symbolTable.varCounts.push_back(this->symbolTable.varCount);
     this->symbolTable.varCount = 0;
   }
 
-  // Begin checks for assembly outputs
-  // if(root->label == "program") {
-  //   // this->out << "<program>" << endl;
-  // }
-  // else if(root->label == "block") {
-  //   // this->out << "<block>" << endl;
-  // }
-  // else if(root->label == "vars") {
-  //   // this->out << "<vars>" << endl;
-  // }
-  // else if(root->label == "expr") {
-  //   this->out << "<expr>" << endl;
-  // }
-  // else if(root->label == "N") {
-  //   this->out << "<N>" << endl;
-  // }
-  // else if(root->label == "A") {
-  //   this->out << "<A>" << endl;
-  // }
-  // else if(root->label == "M") {
-  //   this->out << "<M>" << endl;
-  // }
-  // else if(root->label == "R") {
-  //   this->out << "<R>" << endl;
-  // }
-  // else if(root->label == "stats") {
-  //   this->out << "<stats>" << endl;
-  // }
-  // else if(root->label == "mStat") {
-  //   this->out << "<mStat>" << endl;
-  // }
-  // else if(root->label == "stat") {
-  //   this->out << "<stat>" << endl;
-  // }
-  // else if(root->label == "in") {
-  //   // getter reads in an integer from input and stores it in the identifier
-  //   this->out << "<in>" << endl;
-  // }
-  // else if(root->label == "out") {
-  //   // outter outputs the given calculated value
-  //   this->out << "<out>" << endl;
-  // }
-  // else if(root->label == "if") {
-  //   // if statement is like in C
-  //   // this->out << "<if>" << endl;
-  //   // 1. Evaluate arg2 (should be 3rd token)
-  //   // this->scanPreorder(root->nodes[2], level + 1);
-  //   // 2. STORE results2 (will be done at the token level)
-  //   // 3. Evaluate arg1 (should be 1st token)
-  //   // this->scanPreorder(root->nodes[0], level + 1);
-
-  //   // 4. Based on the value of <RO> (nodes[1]), write out accordingly
-    
-  // }
-  // else if(root->label == "loop") {
-  //   // Loop statement is like the while loop in C
-  //   this->out << "<loop>" << endl;
-  // }
-  // else if(root->label == "assign") {
-  //   // Assignment evaluates the expression on the right and assigns to the ID on the left
-  //   this->out << "<assign>" << endl;
-  // }
-  // else if(root->label == "RO") {
-  //   /*
-  //   =< is less equal
-  //   => is greater equal
-  //   [ == ]  is NOT equal
-  //   == is equal
-  //   % returns true if the signs of the arguments are opposite
-  //   */
-  //   this->out << "<RO>" << endl;
-  //   if(root->nodes[1]->tokens[0]->tokenInstance == "=>") {
-  //     // greater than equal
-  //     this->out << "" << endl;
-  //   }
-  //   else if(root->nodes[1]->tokens[0]->tokenInstance == "=<") {
-  //     // less than equal
-  //     this->out << "" << endl;
-  //   }
-  //   else if(root->nodes[1]->tokens[0]->tokenInstance == "==") {
-  //     // is equal
-  //     this->out << "" << endl;
-  //   }
-  //   else if(root->nodes[1]->tokens[0]->tokenInstance == "[==]") {
-  //     // not equal
-  //     this->out << "" << endl;
-  //   }
-  //   else if(root->nodes[1]->tokens[0]->tokenInstance == "%") {
-  //     // returns true if signs of arguments are opposite
-  //     this->out << "" << endl;
-  //   }
-  // }
-  // else if(root->label == "label") {
-  //   // void statement places a label that can be jumped to directly in a branch using proc
-  //   this->out << "<label>" << endl;
-  // }
-  // else if(root->label == "goto") {
-  //   this->out << "<goto>" << endl;
-  // }
-  // else {
-  //   cout << "ERROR?: no matching label found" << endl;
-  // }
-
-  if(root->tokens.size() > 0) cout << "\n";
-
-  // Iterate over vectors, from left to right, calling printPreorder() on the vector
-  // (source) https://cal-linux.com/tutorials//vectors.html
-  // size_t i = 0;
-  // for(vector<Node*>::iterator t = root->nodes.begin(); t != root->nodes.end(); ++t) {
-  //   scanPreorder(root->nodes[i], level + 1);
-  //   ++i;
-  // }
+  if(root->tokens.size() > 0) {
+    cout << "\n";
+  }
 
   if(root->label == "block") {
     // Pop All elements at the block level
