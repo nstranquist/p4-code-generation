@@ -12,6 +12,7 @@ class PrintTree {
     int tempVarsCount;
     int tempLabelsCount;
     vector<string> globalValues;
+    string lab1;
 
     void semanticAnalyze(Node *node, string outputFilename);
     void scanPreorder(Node *node, int level);
@@ -24,6 +25,7 @@ class PrintTree {
     string generateTempLabel();
     string getMostRecentTempVar();
     string getMostRecentTempLabel();
+    void fillLabel(string label);
 
   private:
     SymbolTable symbolTable;

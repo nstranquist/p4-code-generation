@@ -406,6 +406,18 @@ void PrintTree::scanPreorder(Node *root, int level) {
       this->out << tempLabel << ": NOOP" << endl;
       // 4. label stuff...
     }
+    else if(root->label == "label") { // void Identifier
+      if(!root->tokens.empty() && root->tokens[1]->tokenID == IDENT_tk) {
+        tempLabel = this->generateTempLabel();
+        this->out << tempLabel << ": ";
+        this->fillLabel(tempLabel);
+      }
+    }
+    else if(root->label == "goto") { // proc Identifier
+      if(!root->tokens.empty() && root->tokens[1]->tokenID == IDENT_tk) {
+        this->out << "BR " << this->lab1 << endl;
+      }
+    }
     else {
       size_t i = 0;
       for(vector<Node*>::iterator t = root->nodes.begin(); t != root->nodes.end(); ++t) {
@@ -650,4 +662,16 @@ void PrintTree::printPreorder(Node *root, int level) {
     printPreorder(root->nodes[i], level + 1);
     ++i;
   }
+}
+
+void PrintTree::fillLabel(string label) {
+  if(this->lab1 == "") {
+    this->lab1 = label;
+  }
+  // else if(this->lab2 == "") {
+  //   this->lab2 = label;
+  // }
+  // else if(this->lab3 == "") {
+  //   this->lab3 = label;
+  // }
 }
