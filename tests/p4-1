@@ -9,6 +9,7 @@ loop [ y => z ]
     begin
     assign sum := sum + z ;
     assign z := z + 1 ;
+    outter z ;
     end ;
 outter sum ;
 end

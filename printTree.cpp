@@ -76,6 +76,7 @@ void PrintTree::scanPreorder(Node *root, int level) {
         this->out << "LOAD " << tempVar << endl;
         // 4. "STACKW found"
         this->out << "STACKW " << to_string(found) << endl;
+        // this->out << "POP" << endl;
       }
       else {
         this->out << "READ " << root->tokens[1]->tokenInstance << endl;
@@ -174,7 +175,7 @@ void PrintTree::scanPreorder(Node *root, int level) {
       }
       else {
         // Add to Local Storage
-        this->out << "STACKR " << found << endl;
+        this->out << "STACKW " << found << endl;
       }
     }
     else if(root->label == "expr") {
@@ -261,14 +262,14 @@ void PrintTree::scanPreorder(Node *root, int level) {
       if(root->nodes[1]->tokens[0]->tokenInstance == "=>") {
         this->out << "SUB " << tempVar << endl;
         // greater than equal
-        this->out << "BRZNEG " << tempLabel << endl;
+        this->out << "BRNEG " << tempLabel << endl;
 
         this->scanPreorder(root->nodes[3], level + 1);
       }
       else if(root->nodes[1]->tokens[0]->tokenInstance == "=<") {
         this->out << "SUB " << tempVar << endl;
         // less than equal
-        this->out << "BRZPOS " << tempLabel << endl;
+        this->out << "BRPOS " << tempLabel << endl;
 
         this->scanPreorder(root->nodes[3], level + 1);
       }
@@ -311,14 +312,14 @@ void PrintTree::scanPreorder(Node *root, int level) {
       if(root->nodes[1]->tokens[0]->tokenInstance == "=>") {
         this->out << "SUB " << tempVar << endl;
         // greater than equal
-        this->out << "BRZNEG " << tempLabel << endl;
+        this->out << "BRNEG " << tempLabel << endl;
         // Do everything inside loop
         this->scanPreorder(root->nodes[3], level + 1);
       }
       else if(root->nodes[1]->tokens[0]->tokenInstance == "=<") {
         this->out << "SUB " << tempVar << endl;
         // less than equal
-        this->out << "BRZPOS " << tempLabel << endl;
+        this->out << "BRPOS " << tempLabel << endl;
         // Do everything inside loop
         this->scanPreorder(root->nodes[3], level + 1);
       }
