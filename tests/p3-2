@@ -7,10 +7,9 @@ data x := 5 ;
 loop [ y => z ]
   begin
   data m := 3 ;
-     begin
-     proc x ; 
-     assign m := y ;
-     end
+  proc x ; 
+  assign m := y ;
+  assign z := z + 100 ;
   end ;
 outter x ;
 end

@@ -104,7 +104,7 @@ void PrintTree::scanPreorder(Node *root, int level) {
                 }
                 Symbol *symbol = this->symbolTable.createSymbol(*t);
                 this->symbolTable.pushGlobal(symbol);
-                this->out << "PUSH" << endl;
+                // this->out << "PUSH" << endl;
               }
               else {
                 int found = this->symbolTable.find((*t)->tokenInstance);
